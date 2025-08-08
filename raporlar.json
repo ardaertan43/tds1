@@ -1,0 +1,183 @@
+[
+  {
+    "tarih": "08-08-2025",
+    "vardiya": "Gündüz",
+    "zaman": "08-08-2025 12:41",
+    "satirlar": [
+      {
+        "Makine": "T02",
+        "İş Kodu": "001",
+        "Operatör": "Sercan Gür",
+        "Üretim": 5656,
+        "Hurda": 66,
+        "Kod": "HT02",
+        "Açıklama": "tgdfd",
+        "Hedef": 5505
+      },
+      {
+        "Makine": "T03",
+        "İş Kodu": "005",
+        "Operatör": "Salim Tanrıkulu",
+        "Üretim": 5656,
+        "Hurda": 666,
+        "Kod": "HT03",
+        "Açıklama": "fddfdfd",
+        "Hedef": 6000
+      }
+    ]
+  },
+  {
+    "tarih": "09-08-2025",
+    "vardiya": "Gündüz",
+    "zaman": "08-08-2025 14:18",
+    "satirlar": [
+      {
+        "Makine": "T01",
+        "İş Kodu": "003",
+        "Operatör": "Arda Ertan",
+        "Üretim": 5632,
+        "Hurda": 21,
+        "Kod": "HT07",
+        "Açıklama": "45475",
+        "Hedef": 5000
+      }
+    ]
+  },
+  {
+    "tarih": "08-08-2025",
+    "vardiya": "Gündüz",
+    "zaman": "08-08-2025 15:42",
+    "satirlar": [
+      {
+        "Makine": "T01",
+        "İş Kodu": "002",
+        "Operatör": "Ali Sucu",
+        "Üretim": 2154,
+        "Hurda": 25,
+        "Kod": "HT04",
+        "Açıklama": "asdqweeasds",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T02",
+        "İş Kodu": "009",
+        "Operatör": "Salim Tanrıkulu",
+        "Üretim": 5155,
+        "Hurda": 14,
+        "Kod": "HT05",
+        "Açıklama": "d",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T03",
+        "İş Kodu": "007",
+        "Operatör": "Mürsel Gümüşsoy",
+        "Üretim": 1785,
+        "Hurda": 45,
+        "Kod": "HT01",
+        "Açıklama": "das",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T04",
+        "İş Kodu": "006",
+        "Operatör": "Sercan Gür",
+        "Üretim": 5894,
+        "Hurda": 74,
+        "Kod": "HT04",
+        "Açıklama": "das",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T05",
+        "İş Kodu": "004",
+        "Operatör": "Salim Tanrıkulu",
+        "Üretim": 5587,
+        "Hurda": 58,
+        "Kod": "HT08",
+        "Açıklama": "das",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T06",
+        "İş Kodu": "003",
+        "Operatör": "Arda Ertan",
+        "Üretim": 5598,
+        "Hurda": 65,
+        "Kod": "HT09",
+        "Açıklama": "da",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T07",
+        "İş Kodu": "001",
+        "Operatör": "Mürsel Gümüşsoy",
+        "Üretim": 2587,
+        "Hurda": 58,
+        "Kod": "HT02",
+        "Açıklama": "sd",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T08",
+        "İş Kodu": "004",
+        "Operatör": "Yunus Kılıç",
+        "Üretim": 2687,
+        "Hurda": 52,
+        "Kod": "HT05",
+        "Açıklama": "asd",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T09",
+        "İş Kodu": "004",
+        "Operatör": "Arda Ertan",
+        "Üretim": 2589,
+        "Hurda": 12,
+        "Kod": "HT05",
+        "Açıklama": "as",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T10",
+        "İş Kodu": "004",
+        "Operatör": "Ş Muratoğlu",
+        "Üretim": 4589,
+        "Hurda": 120,
+        "Kod": "HT09",
+        "Açıklama": "fdfg",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T11",
+        "İş Kodu": "008",
+        "Operatör": "",
+        "Üretim": 5489,
+        "Hurda": 424,
+        "Kod": "HT08",
+        "Açıklama": "df",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T12",
+        "İş Kodu": "008",
+        "Operatör": "",
+        "Üretim": 4895,
+        "Hurda": 58,
+        "Kod": "HT09",
+        "Açıklama": "dfg",
+        "Hedef": 5000
+      },
+      {
+        "Makine": "T13",
+        "İş Kodu": "006",
+        "Operatör": "",
+        "Üretim": 4589,
+        "Hurda": 58,
+        "Kod": "HT02",
+        "Açıklama": "fg",
+        "Hedef": 5000
+      }
+    ]
+  }
+]
