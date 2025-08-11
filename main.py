@@ -5,6 +5,13 @@ import json
 from datetime import datetime
 import os
 
+# (Opsiyonel) Python tarafında TR ay/gün isimleri için
+try:
+    import locale
+    locale.setlocale(locale.LC_TIME, "tr_TR.UTF-8")
+except Exception:
+    pass
+
 LOGO_PATH = "tds_logo.png"
 KULLANICI_DOSYA = "kullanicilar.json"
 OPERATOR_DOSYA = "operatorler.json"
@@ -43,6 +50,7 @@ def save_json(filename, data):
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+# Stil
 st.markdown("""
 <style>
 .stButton>button, .stDownloadButton>button {
@@ -144,7 +152,9 @@ def main_app():
     with tab1:
         col1, col2 = st.columns([2,1])
         with col1:
-            tarih = st.date_input("Tarih (GG-AA-YYYY)", value=datetime.today()).strftime("%d-%m-%Y")
+            # Tarih kutusunu DD-MM-YYYY olarak göster
+            tarih_dt = st.date_input("Tarih (GG-AA-YYYY)", value=datetime.today(), format="DD-MM-YYYY")
+            tarih = tarih_dt.strftime("%d-%m-%Y")
         with col2:
             vardiya = st.selectbox("Vardiya", ["Gündüz", "Gece"])
 
@@ -152,7 +162,7 @@ def main_app():
         st.markdown("<h5 style='margin-bottom: 4px; margin-top: 6px;'>Üretim Tablosu</h5>", unsafe_allow_html=True)
 
         satir_sayisi = 13
-        # Yeni: Başlama/Bitiş Saati sütunları eklendi (None ile başlayacak; kullanıcı seçecek)
+        # Başlama/Bitiş Saati alanları eklendi (kullanıcı seçecek)
         default_rows = [{
             "Makine": f"T{i:02}",
             "İş Kodu": "",
@@ -166,7 +176,7 @@ def main_app():
             "Hedef": 0
         } for i in range(1, satir_sayisi+1)]
 
-        # Sütun sırası: Operatör'ün hemen yanına saatler
+        # Operatör'ün hemen yanına saatler
         df = pd.DataFrame(default_rows)[[
             "Makine", "İş Kodu", "Operatör", "Başlama Saati", "Bitiş Saati",
             "Üretim", "Hurda", "Kod", "Açıklama", "Hedef"
@@ -178,8 +188,9 @@ def main_app():
                 "Makine": st.column_config.TextColumn(width="small"),
                 "İş Kodu": st.column_config.SelectboxColumn(options=[""] + iskodlari, width="small"),
                 "Operatör": st.column_config.SelectboxColumn(options=[""] + operatorler, width="small"),
-                "Başlama Saati": st.column_config.TimeColumn(width="small"),
-                "Bitiş Saati": st.column_config.TimeColumn(width="small"),
+                # Saatler HH:mm görünsün
+                "Başlama Saati": st.column_config.TimeColumn(format="HH:mm", step=1, width="small"),
+                "Bitiş Saati": st.column_config.TimeColumn(format="HH:mm", step=1, width="small"),
                 "Üretim": st.column_config.NumberColumn(width="small", step=1, min_value=0),
                 "Hurda": st.column_config.NumberColumn(width="small", step=1, min_value=0),
                 "Kod": st.column_config.SelectboxColumn(options=[""] + hatakodlari, width="small"),
@@ -193,23 +204,18 @@ def main_app():
         )
 
         if st.button("KAYDET", type="primary"):
-            # TimeColumn -> Python time objesi veya None; JSON'a HH:MM string olarak yazalım
+            # TimeColumn -> time veya string olabilir; JSON'a HH:MM olarak yaz
             def _fmt_time(t):
                 try:
                     return t.strftime("%H:%M") if t else ""
                 except:
-                    return ""
+                    return str(t)[:5] if t else ""
 
             rows = df_edit.to_dict("records")
             for r in rows:
-                if isinstance(r.get("Başlama Saati", None), str):
-                    # bazen zaten string dönebilir, formatla dokunma
-                    pass
-                else:
+                if not isinstance(r.get("Başlama Saati"), str):
                     r["Başlama Saati"] = _fmt_time(r.get("Başlama Saati"))
-                if isinstance(r.get("Bitiş Saati", None), str):
-                    pass
-                else:
+                if not isinstance(r.get("Bitiş Saati"), str):
                     r["Bitiş Saati"] = _fmt_time(r.get("Bitiş Saati"))
 
             kayitlar = [
@@ -274,8 +280,7 @@ def main_app():
                 )
                 df_rapor = pd.DataFrame(rapor.get("satirlar", []))
                 if not df_rapor.empty:
-                    # Kayıtlar sekmesinde saatler de görünür (raporlar sekmesinde göstermiyoruz)
-                    st.dataframe(df_rapor, use_container_width=True)
+                    st.dataframe(df_rapor, use_container_width=True)  # Saatler burada görünsün
                 else:
                     st.info("Bu raporda kayıtlı satır yok.")
                 if st.button("Günü Sil", key=f"gun_sil_{i}", help="Bu günün tüm kayıtlarını siler!"):
@@ -292,7 +297,7 @@ def main_app():
                         if st.button("İptal", key=f"gun_iptal_{i}", type="secondary"):
                             st.session_state.gun_sil_idx = None
 
-    # --- 3. SEKME: RAPORLAR & FİLTRELEME (saat sütunu YOK) ---
+    # --- 3. SEKME: RAPORLAR & FİLTRELEME (saat sütunları yok) ---
     with tab2:
         st.subheader("Raporlar ve Filtreleme", divider=True)
         data = load_data()
@@ -302,7 +307,6 @@ def main_app():
             all_rows = []
             for rapor in data:
                 for satir in rapor.get("satirlar", []):
-                    # Saat bilgilerini rapor filtresine koymuyoruz (ekran sade kalsın)
                     all_rows.append({
                         "Tarih": rapor.get("tarih", ""),
                         "Vardiya": rapor.get("vardiya", ""),
@@ -317,7 +321,6 @@ def main_app():
                     })
             df_all = pd.DataFrame(all_rows)
 
-            min_date = max_date = None
             if not df_all.empty:
                 df_all["Tarih_dt"] = pd.to_datetime(df_all["Tarih"], format="%d-%m-%Y", errors='coerce')
                 min_date = df_all["Tarih_dt"].min()
@@ -327,9 +330,9 @@ def main_app():
 
             col1, col2 = st.columns(2)
             with col1:
-                tarih_bas = st.date_input("Başlangıç Tarihi", value=min_date if min_date is not None else datetime.today())
+                tarih_bas = st.date_input("Başlangıç Tarihi", value=min_date if min_date is not None else datetime.today(), format="DD-MM-YYYY")
             with col2:
-                tarih_bit = st.date_input("Bitiş Tarihi", value=max_date if max_date is not None else datetime.today())
+                tarih_bit = st.date_input("Bitiş Tarihi", value=max_date if max_date is not None else datetime.today(), format="DD-MM-YYYY")
 
             col3, col4, col5, col6 = st.columns(4)
             vardiya_f = col3.selectbox("Vardiya", ["Tümü"] + sorted(df_all["Vardiya"].unique()), index=0)
@@ -451,7 +454,7 @@ def main_app():
                     use_container_width=True
                 )
 
-    # --- 5. SEKME: ADMIN PANELİ (Eğer admin ise) ---
+    # --- 5. SEKME: ADMIN PANELİ ---
     if admin_tab:
         with admin_tab[0]:
             st.header("🔑 Admin Paneli")
