@@ -12,7 +12,7 @@ HATAKOD_DOSYA = "hatakodlari.json"
 ISKOD_DOSYA = "iskodlari.json"
 
 VARSAYILAN_KULLANICILAR = {
-    "admin": "tds2024!",
+    "admin": "1234",
     "Arda Ertan": "1234",
     "Emrah Karaman": "1234",
     "Elif Kaya": "abc1",
@@ -518,4 +518,5 @@ if "giris" not in st.session_state or not st.session_state["giris"]:
     login_page()
 else:
     main_app()
+
 
