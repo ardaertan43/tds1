@@ -152,10 +152,13 @@ def main_app():
         st.markdown("<h5 style='margin-bottom: 4px; margin-top: 6px;'>Üretim Tablosu</h5>", unsafe_allow_html=True)
 
         satir_sayisi = 13
+        # Yeni: Başlama/Bitiş Saati sütunları eklendi (None ile başlayacak; kullanıcı seçecek)
         default_rows = [{
             "Makine": f"T{i:02}",
             "İş Kodu": "",
             "Operatör": "",
+            "Başlama Saati": None,
+            "Bitiş Saati": None,
             "Üretim": 0,
             "Hurda": 0,
             "Kod": "",
@@ -163,18 +166,24 @@ def main_app():
             "Hedef": 0
         } for i in range(1, satir_sayisi+1)]
 
-        df = pd.DataFrame(default_rows)
+        # Sütun sırası: Operatör'ün hemen yanına saatler
+        df = pd.DataFrame(default_rows)[[
+            "Makine", "İş Kodu", "Operatör", "Başlama Saati", "Bitiş Saati",
+            "Üretim", "Hurda", "Kod", "Açıklama", "Hedef"
+        ]]
 
         df_edit = st.data_editor(
             df,
             column_config={
                 "Makine": st.column_config.TextColumn(width="small"),
                 "İş Kodu": st.column_config.SelectboxColumn(options=[""] + iskodlari, width="small"),
-                "Operatör": st.column_config.SelectboxColumn(options=[""] + operatorler, width="medium"),
+                "Operatör": st.column_config.SelectboxColumn(options=[""] + operatorler, width="small"),
+                "Başlama Saati": st.column_config.TimeColumn(width="small"),
+                "Bitiş Saati": st.column_config.TimeColumn(width="small"),
                 "Üretim": st.column_config.NumberColumn(width="small", step=1, min_value=0),
                 "Hurda": st.column_config.NumberColumn(width="small", step=1, min_value=0),
                 "Kod": st.column_config.SelectboxColumn(options=[""] + hatakodlari, width="small"),
-                "Açıklama": st.column_config.TextColumn(width="large"),
+                "Açıklama": st.column_config.TextColumn(width="medium"),
                 "Hedef": st.column_config.NumberColumn(width="small", step=1, min_value=0),
             },
             hide_index=True,
@@ -184,9 +193,31 @@ def main_app():
         )
 
         if st.button("KAYDET", type="primary"):
+            # TimeColumn -> Python time objesi veya None; JSON'a HH:MM string olarak yazalım
+            def _fmt_time(t):
+                try:
+                    return t.strftime("%H:%M") if t else ""
+                except:
+                    return ""
+
+            rows = df_edit.to_dict("records")
+            for r in rows:
+                if isinstance(r.get("Başlama Saati", None), str):
+                    # bazen zaten string dönebilir, formatla dokunma
+                    pass
+                else:
+                    r["Başlama Saati"] = _fmt_time(r.get("Başlama Saati"))
+                if isinstance(r.get("Bitiş Saati", None), str):
+                    pass
+                else:
+                    r["Bitiş Saati"] = _fmt_time(r.get("Bitiş Saati"))
+
             kayitlar = [
-                row for row in df_edit.to_dict("records")
-                if any([row["İş Kodu"], row["Operatör"], row["Üretim"], row["Hurda"], row["Kod"], row["Açıklama"], row["Hedef"]])
+                row for row in rows
+                if any([
+                    row["İş Kodu"], row["Operatör"], row["Üretim"], row["Hurda"],
+                    row["Kod"], row["Açıklama"], row["Hedef"], row["Başlama Saati"], row["Bitiş Saati"]
+                ])
             ]
             if kayitlar:
                 data = load_data()
@@ -243,6 +274,7 @@ def main_app():
                 )
                 df_rapor = pd.DataFrame(rapor.get("satirlar", []))
                 if not df_rapor.empty:
+                    # Kayıtlar sekmesinde saatler de görünür (raporlar sekmesinde göstermiyoruz)
                     st.dataframe(df_rapor, use_container_width=True)
                 else:
                     st.info("Bu raporda kayıtlı satır yok.")
@@ -260,7 +292,7 @@ def main_app():
                         if st.button("İptal", key=f"gun_iptal_{i}", type="secondary"):
                             st.session_state.gun_sil_idx = None
 
-    # --- 3. SEKME: RAPORLAR & FİLTRELEME ---
+    # --- 3. SEKME: RAPORLAR & FİLTRELEME (saat sütunu YOK) ---
     with tab2:
         st.subheader("Raporlar ve Filtreleme", divider=True)
         data = load_data()
@@ -270,6 +302,7 @@ def main_app():
             all_rows = []
             for rapor in data:
                 for satir in rapor.get("satirlar", []):
+                    # Saat bilgilerini rapor filtresine koymuyoruz (ekran sade kalsın)
                     all_rows.append({
                         "Tarih": rapor.get("tarih", ""),
                         "Vardiya": rapor.get("vardiya", ""),
