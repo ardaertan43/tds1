@@ -102,7 +102,7 @@ def logo_header():
         unsafe_allow_html=True,
     )
     st.markdown(
-        "<h3 style='margin-bottom:0px; margin-top:10px; font-size:2.1rem;'>İşleme Atölyesi Üretim Takibi</h3>",
+        "<h3 style='margin-bottom:0px; margin-top:10px; font-size:2.1rem;'>İşleme  Üretim Takibi</h3>",
         unsafe_allow_html=True
     )
     st.write("---")
@@ -518,3 +518,4 @@ if "giris" not in st.session_state or not st.session_state["giris"]:
     login_page()
 else:
     main_app()
+
